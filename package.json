@@ -1,0 +1,26 @@
+{
+  "name": "gf-js",
+  "version": "1.0.0",
+  "description": "Write some userful extension function for Javascript GeneratorFunction.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/namdn/gf-js.git"
+  },
+  "keywords": [
+    "GeneratorFunction",
+    "Generator"
+  ],
+  "author": "dinhnhonam@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/namdn/gf-js/issues"
+  },
+  "homepage": "https://github.com/namdn/gf-js#readme",
+  "dependencies": {
+    "chai": "^4.1.2"
+  }
+}
