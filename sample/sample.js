@@ -62,14 +62,15 @@ console.log('fibonacci',
 
 function* exp_2() {
     let a = 1;
-    while(true){
+    while (true) {
         yield a;
-        a = a*2;
+        a = a * 2;
     }
 }
 
 console.log('exp_2',
     exp_2()
-        .islice(0, 100)
+        .islice(0, 64)
         .toArray()
 );
+
