@@ -15,7 +15,7 @@ GF.iproduct = function* (iterables, repeat = 1) {
     }
 
     //convert each iterable to array
-    let arrays = iterables.map(iterable => [...iterable]);
+    let arrays = iterables.map(iterable => Array.isArray(iterable) ? iterable : [...iterable]);
 
     //repeat arrays
     let pools = [];
@@ -76,6 +76,7 @@ GF.ipermutations = function* (iterable, r = undefined) {
 }
 
 /**
+ * Permutations
  * 
  * @param {*} iterable 
  * @param {*} r 
