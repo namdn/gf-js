@@ -4,10 +4,10 @@ require('./array.ext');
 /**
  * Math product
  * 
- * @param {Array<GeneratorFunction,Array>} iterables 
- * @param {Number} repeat 
+ * @param {Array<GeneratorFunction|Array>} iterables Array of (Array | GeneratorFunction)
+ * @param {Number} repeat number of time repeat
  */
-GF.iproduct = function* (iterables, repeat = 1) {
+GF.iproduct = function* iproduct(iterables, repeat = 1) {
     function __dot(accumulator, iterable) {
         for (let arr of accumulator) {
             yield * iterable.map(v => [...arr, v]);
@@ -30,7 +30,6 @@ GF.iproduct = function* (iterables, repeat = 1) {
     }
     yield* accumulator;
 }
-
 
 /**
  * 
