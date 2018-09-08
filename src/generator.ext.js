@@ -195,6 +195,15 @@ GF.prototype.imap = function* (callback) {
 }
 
 /**
+ * Same `Array.map`.
+ * 
+ * @param {Function} callback 
+ */
+GF.prototype.map = function* (callback){
+    return [...this.imap(callback)];
+}
+
+/**
  * Same python `zip`
  * 
  * @param {Array<GeneratorFunction|Array>} iterables 

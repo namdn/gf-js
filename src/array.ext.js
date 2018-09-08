@@ -20,8 +20,17 @@ Array.zip = GF.zip;
 Array.ichain = GF.ichain;
 Array.chain = GF.chain;
 
-Array.prototype.ichunk = function (size) { return  this.toGenerator().ichunk(size); }
-Array.prototype.chunk = function (size) { return this.toGenerator().chunk(size); }
+Array.prototype.imap = function(callback){
+    return this.toGenerator().imap(callback);
+}
+
+Array.prototype.ichunk = function (size) { 
+    return  this.toGenerator().ichunk(size); 
+}
+
+Array.prototype.chunk = function (size) { 
+    return this.toGenerator().chunk(size); 
+}
 
 Array.dict = function (pairs) {
     let d = {};
