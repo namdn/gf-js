@@ -1,6 +1,6 @@
 {
   "name": "gf-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Write some userful extension function for Javascript GeneratorFunction.",
   "main": "index.js",
   "scripts": {
