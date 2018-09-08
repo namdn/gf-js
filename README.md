@@ -73,15 +73,6 @@ Average of all elements in this array or GF
 ```js
 console.log([1,2,3].avg())	// (1+2+3)/ 3 = 2
 ```
-## 
-## `Array.zip(...iterables)` or `GF.zip(...iterables)`
-The same python build-in [`zip` function ](https://docs.python.org/3/library/functions.html#zip) 
-```js
-let x = [1,2,3,4];
-let y = ['a','b','c','d'];
-let z = Array.zip(x,y);
-//z = [[1,'a'],[2,'b'],[3,'c'],[4,'d']]
-```
 ## `GF.prototype.map(callback)` and `GF.prototype.imap(callback)`
 Apply [`GF.prototype.map(callback)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) to GF.
 ```js
@@ -91,6 +82,15 @@ function *generator(n){
 let g = generator(10);
 let h = g.imap(i=>i*2).toArray();	//[0,2,4,6,8,10,12,14,16,18]
 let k = g.map(i=>i*3);				//[0,3,6,9,12,15,18,21,24,27]
+```
+## 
+## `Array.zip(...iterables)` or `GF.zip(...iterables)`
+The same python build-in [`zip` function ](https://docs.python.org/3/library/functions.html#zip) 
+```js
+let x = [1,2,3,4];
+let y = ['a','b','c','d'];
+let z = Array.zip(x,y);
+//z = [[1,'a'],[2,'b'],[3,'c'],[4,'d']]
 ```
 ## `Array.izip(...iterables)` or `GF.izip(...iterables)` 
 The same python build-in [`zip` function ](https://docs.python.org/3/library/functions.html#zip) but returns Generator instead of Array
@@ -229,3 +229,6 @@ let g = generator();
 let even = g.every(x=>x%2==0);	//true
 let mod3 = g.some(x=>x%3==0);	//false
 ```
+# License
+
+[MIT](https://github.com/NodeRedis/node_redis/blob/master/LICENSE)
