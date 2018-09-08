@@ -199,7 +199,7 @@ GF.prototype.imap = function* (callback) {
  * 
  * @param {Function} callback 
  */
-GF.prototype.map = function* (callback){
+GF.prototype.map = function (callback){
     return [...this.imap(callback)];
 }
 
