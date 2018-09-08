@@ -2,6 +2,11 @@
 
 Write some extensions function for [**GeneratorFunction**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction).
 
+Install with:
+```
+npm install gf-js --save
+```
+
 ## What is `GeneratorFunction`?
   `GeneratorFunction` is `Function` can return a [`Generator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator "The Generator object is returned by a generator function and it conforms to both the iterable protocol and the iterator protocol.") object. You can read more information in [function*](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*).
   
@@ -27,6 +32,17 @@ See [sample.js](./sample/sample.js)
   
 
 ## API
+
+### Initialize
+
+Before using, you have to import it in your project first
+
+```js
+const GF = require('gf-js')
+```
+After that all functions is pluged-in to `Array` and `Generator` and you can use it any where.
+
+
 
 All APIs are add-on to JavaScript [`Array`](https://developer.mozilla.org/vi/docs/Web/JavaScript/Reference/Global_Objects/Array) and [`GeneratorFunction`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction) extension functions.
 
