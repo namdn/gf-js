@@ -41,7 +41,7 @@ Array.dict = function (pairs) {
     return d;
 }
 
-Array.toDict = function (callback) {
+Array.prototype.toDict = function (callback) {
     let d = {};
     this.forEach((item, ...args) => {
         let key = callback(item, ...args);
