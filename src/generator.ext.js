@@ -1,3 +1,5 @@
+const { _decisionCallback, _getCallback } = require('./callback')
+
 /**
  * GeneratorFunction class
  */
@@ -93,16 +95,30 @@ GF.prototype.maxByComparator = function (comparator) {
     return this.minByComparator((a, b) => -comparator(a, b));
 }
 
+GF.compare = function (a, b) {
+    if (a === b) return 0;
+    if (!Array.isArray(a) || !Array.isArray(b)) {
+        if (a > b || b === void 0) return 1;
+        if (a < b || a === void 0) return -1;
+        return 0;
+    }
+    for (let [x, y] of Array.izip(a, b)) {
+        c = GF.compare(x, y);
+        if (c != 0) return c;
+    }
+    return a.length - b.length;
+}
+
 /**
  * Same `Math.min`.
  * 
  * @param {Function} [callback] 
  */
-GF.prototype.min = function (callback) {
+GF.prototype._minMax = function (callback, isMin = true) {
     let first = this.next();
     if (first.done) return undefined;
 
-    callback = callback || defaultCallback;
+    callback = _getCallback(callback, true) || defaultCallback;
     let index = 0;
 
     let target = first.value;
@@ -113,13 +129,22 @@ GF.prototype.min = function (callback) {
         if (done) break;
 
         let newValue = callback(value, index++, this);
-        if (targetValue > newValue) {
+        let c = GF.compare(targetValue, newValue)
+        if ((isMin && c == 1) || (!isMin && c == -1)) {
             target = value, targetValue = newValue;
         }
+        // if (targetValue > newValue) {
+        //     target = value, targetValue = newValue;
+        // }
     } while (true);
 
     return target;
 }
+GF.prototype.min = function (callback) {
+    return this._minMax(callback, true);
+}
+
+GF.prototype.minBy = GF.prototype.min;
 
 /**
  * Same `Math.max`.
@@ -127,27 +152,9 @@ GF.prototype.min = function (callback) {
  * @param {Function} [callback] 
  */
 GF.prototype.max = function (callback) {
-    let first = this.next();
-    if (first.done) return undefined;
-
-    callback = callback || defaultCallback;
-    let index = 0;
-
-    let target = first.value;
-    let targetValue = callback(target, index++, this);
-
-    do {
-        let { value, done } = this.next();
-        if (done) break;
-
-        let newValue = callback(value, index++, this);
-        if (targetValue < newValue) {
-            target = value, targetValue = newValue;
-        }
-    } while (true);
-
-    return target;
+    return this._minMax(callback, false);
 }
+GF.prototype.maxBy = GF.prototype.max;
 
 /**
  * Sum all Number in GeneratorFunction.
@@ -187,21 +194,26 @@ GF.prototype.round_avg = function () {
  * 
  * @param {Function} callback 
  */
-GF.prototype.imap = function* (callback) {
+GF.prototype.imap = function* (callback, toArray = false) {
+    callback = _getCallback(callback, toArray);
     let index = 0;
     for (let v of this) {
         yield callback(v, index++, this);
     }
 }
 
+GF.prototype.imapBy = GF.prototype.imap;
+
 /**
  * Same `Array.map`.
  * 
  * @param {Function} callback 
  */
-GF.prototype.map = function (callback){
-    return [...this.imap(callback)];
+GF.prototype.map = function (callback, toArray = false) {
+    return [...this.imap(callback, toArray)];
 }
+
+GF.prototype.mapBy = GF.prototype.map;
 
 /**
  * Same python `zip`
@@ -302,7 +314,7 @@ GF.range = (...args) => [...GF.irange(...args)];
  * @param {Function} callback 
  */
 GF.prototype.itakeWhile = function* (callback) {
-    callback = callback || defaultCallback;
+    callback = _decisionCallback(callback) || defaultCallback;
     let index = 0;
     for (let v of this) {
         if (!callback(v, index++, this)) break;
@@ -318,7 +330,7 @@ GF.prototype.takeWhile = function (callback) { return [...this.itakeWhile(callba
  * @param {Function} callback 
  */
 GF.prototype.idropWhile = function* (callback) {
-    callback = callback || defaultCallback;
+    callback = _decisionCallback(callback) || defaultCallback;
 
     let start = false;
     let index = 0;
@@ -339,6 +351,7 @@ GF.prototype.dropWhile = function (callback) { return [...this.idropWhile(callba
  * @param {Function} callback 
  */
 GF.prototype.find = function (callback) {
+    callback = _decisionCallback(callback);
     let index = 0;
     for (let v of this) {
         if (callback(v, index++, this))
@@ -353,6 +366,7 @@ GF.prototype.find = function (callback) {
  * @param {Function} callback 
  */
 GF.prototype.findIndex = function (callback) {
+    callback = _decisionCallback(callback);
     let index = 0;
     for (let v of this) {
         if (callback(v, index, this))
@@ -377,6 +391,7 @@ GF.prototype.first = function (callback) {
  * @param {Function} callback 
  */
 GF.prototype.ifilter = function* (callback) {
+    callback = _decisionCallback(callback);
     let index = 0;
     for (let v of this) {
         if (callback(v, index++, this))
@@ -384,8 +399,11 @@ GF.prototype.ifilter = function* (callback) {
     }
 }
 
+GF.prototype.ifilterBy = GF.prototype.ifilter;
+
 GF.prototype.filter = function (callback) { return [...this.ifilter(callback)]; }
 
+GF.prototype.filterBy = GF.prototype.filter;
 
 /**
  * Same as `Array.some` 
@@ -394,7 +412,7 @@ GF.prototype.filter = function (callback) { return [...this.ifilter(callback)]; 
  * 
  */
 GF.prototype.some = function (callback) {
-    callback = callback || defaultCallback;
+    callback = _decisionCallback(callback) || defaultCallback;
     let index = 0;
     for (let v of this) {
         if (callback(v, index++, this)) {
@@ -442,7 +460,7 @@ GF.prototype.slice = function (begin, end) { return [...this.islice(begin, end)]
  * @param {Function} [callback] Function to execute for each element
  */
 GF.prototype.groupBy = function (callback) {
-    callback = callback || defaultCallback;
+    callback = _getCallback(callback) || defaultCallback;
     let groups = {};
     let index = 0;
 
@@ -460,7 +478,7 @@ GF.prototype.groupBy = function (callback) {
  * @param {Function} [callback] Function to execute for each element
  */
 GF.prototype.countBy = function (callback) {
-    callback = callback || defaultCallback;
+    callback = _getCallback(callback) || defaultCallback;
     let groups = {};
     let index = 0;
     for (let it of this) {
@@ -477,7 +495,7 @@ GF.prototype.countBy = function (callback) {
  * @param {Function} [callback] Function to execute for each element
  */
 GF.prototype.idistinct = function* (callback) {
-    callback = callback || defaultCallback;
+    callback = _getCallback(callback) || defaultCallback;
 
     let index = 0;
     let s = new Set();

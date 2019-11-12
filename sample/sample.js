@@ -74,20 +74,55 @@ const GF = require('../index');
 //         .toArray()
 // );
 
-x = [
-    undefined,
-    [1,3,-4],
-    [0],
-    [-0],
-    [1,2],
-    [1,3],
-    [1,3,-5],
-    
-]
+// x = [
+//     undefined,
+//     [1,3,-4],
+//     [0],
+//     [-0],
+//     [1,2],
+//     [1,3],
+//     [1,3,-5],
 
-y = [...x];
-y.sort()
-console.log(x.sortBy(x=>x, true));
-console.log(y);
+// ]
+
+// y = [...x];
+// y.sort()
+// console.log(x.sortBy(x=>x, true));
+// console.log(y);
 
 // console.log(-0 == 0);
+
+var users = [
+    { 'user': 'barney', 'age': 36, 'active': true },
+    { 'user': 'fred', 'age': 36, 'active': false }
+];
+console.log(users.mapBy(['user', 'age'], toArray=true));
+
+// console.log(users.ifilterBy(o => !o.active).mapBy(['user','age']));
+// console.log(users.filterBy({ 'age': 36 }));
+// console.log(users.filterBy('active'));
+
+
+console.log(users.maxBy(['age','active']));
+// _.filter(users, function (o) { return !o.active; });
+// // => objects for ['fred']
+
+// // The `_.matches` iteratee shorthand.
+// _.filter(users, { 'age': 36, 'active': true });
+// // => objects for ['barney']
+
+// // The `_.matchesProperty` iteratee shorthand.
+// _.filter(users, ['active', false]);
+// // => objects for ['fred']
+
+// // The `_.property` iteratee shorthand.
+// _.filter(users, 'active');
+//   // => objects for ['barney']
+// x = 1;
+
+// console.log(x.constructor == Object);
+// x = {}
+// console.log(x.constructor == Object);
+
+// x = []
+// console.log(x.constructor == Object);

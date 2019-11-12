@@ -1,4 +1,5 @@
 const GF = require('./generator.ext');
+const { _decisionCallback, _getCallback} = require('./callback')
 
 Array.prototype.sum = function () {
     return this.toGenerator().sum();
@@ -22,6 +23,12 @@ Array.chain = GF.chain;
 
 Array.prototype.imap = function (callback) {
     return this.toGenerator().imap(callback);
+}
+
+Array.prototype.imapBy = Array.prototype.imap;
+
+Array.prototype.mapBy = function(callback, toArray=false){
+    return this.toGenerator().mapBy(callback, toArray);
 }
 
 Array.prototype.ichunk = function (size) {
@@ -62,6 +69,12 @@ Array.range = GF.range;
 Array.prototype.ifilter = function (callback) {
     return this.toGenerator().ifilter(callback);
 }
+Array.prototype.ifilterBy = Array.prototype.ifilter;
+
+Array.prototype.filterBy = function (callback){
+    return this.toGenerator().filterBy(callback)
+}
+
 
 Array.prototype.groupBy = function (callback) {
     return this.toGenerator().groupBy(callback);
@@ -69,6 +82,14 @@ Array.prototype.groupBy = function (callback) {
 
 Array.prototype.countBy = function (callback) {
     return this.toGenerator().countBy(callback);
+}
+
+Array.prototype.minBy = function (callback){
+    return this.toGenerator().minBy(callback);
+}
+
+Array.prototype.maxBy = function (callback){
+    return this.toGenerator().maxBy(callback);
 }
 
 Array.prototype.idistinct = function (callback) {
@@ -112,19 +133,7 @@ Array.prototype.last = function (callback = undefined) {
     return undefined;
 }
 
-Array.compare = function (a, b) {
-    if (a === b) return 0;
-    if (!Array.isArray(a) || !Array.isArray(b)) {
-        if (a > b || b === void 0) return 1;
-        if (a < b || a === void 0) return -1;
-        return 0;
-    }
-    for (let [x, y] of Array.izip(a, b)) {
-        c = Array.compare(x, y);
-        if (c != 0) return c;
-    }
-    return a.length - b.length;
-}
+Array.compare = GF.compare;
 
 Array.prototype.compare = function (b) {
     return Array.compare(this, b);
@@ -138,7 +147,7 @@ Array.prototype.compare = function (b) {
  */
 Array.prototype.orderBy = function (callback = undefined, getIndex = false) {
 
-    callback = callback || (v => v);
+    callback = _getCallback(callback) || (v => v);
     let _withIndex = this.map((e, i) => [e, i]);
     _withIndex.sort(([e1, i1], [e2, i2]) => {
         a = callback(e1, i1, this);
@@ -148,3 +157,8 @@ Array.prototype.orderBy = function (callback = undefined, getIndex = false) {
     return getIndex ? _withIndex : _withIndex.map(([e]) => e);
 }
 Array.prototype.sortBy = Array.prototype.orderBy;
+
+
+GF.prototype.orderBy =  function (callback = undefined, getIndex = false){
+    return this.toArray().orderBy(callback, getIndex);
+}
