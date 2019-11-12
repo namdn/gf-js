@@ -20,16 +20,16 @@ Array.zip = GF.zip;
 Array.ichain = GF.ichain;
 Array.chain = GF.chain;
 
-Array.prototype.imap = function(callback){
+Array.prototype.imap = function (callback) {
     return this.toGenerator().imap(callback);
 }
 
-Array.prototype.ichunk = function (size) { 
-    return  this.toGenerator().ichunk(size); 
+Array.prototype.ichunk = function (size) {
+    return this.toGenerator().ichunk(size);
 }
 
-Array.prototype.chunk = function (size) { 
-    return this.toGenerator().chunk(size); 
+Array.prototype.chunk = function (size) {
+    return this.toGenerator().chunk(size);
 }
 
 Array.dict = function (pairs) {
@@ -111,3 +111,40 @@ Array.prototype.last = function (callback = undefined) {
     }
     return undefined;
 }
+
+Array.compare = function (a, b) {
+    if (a === b) return 0;
+    if (!Array.isArray(a) || !Array.isArray(b)) {
+        if (a > b || b === void 0) return 1;
+        if (a < b || a === void 0) return -1;
+        return 0;
+    }
+    for (let [x, y] of Array.izip(a, b)) {
+        c = Array.compare(x, y);
+        if (c != 0) return c;
+    }
+    return a.length - b.length;
+}
+
+Array.prototype.compare = function (b) {
+    return Array.compare(this, b);
+}
+
+
+/**
+ * Order array by `callback` order function
+ * @param  {Function} callback [description]
+ * @return {[type]}            [description] 
+ */
+Array.prototype.orderBy = function (callback = undefined, getIndex = false) {
+
+    callback = callback || (v => v);
+    let _withIndex = this.map((e, i) => [e, i]);
+    _withIndex.sort(([e1, i1], [e2, i2]) => {
+        a = callback(e1, i1, this);
+        b = callback(e2, i2, this);
+        return Array.compare(a, b);
+    });
+    return getIndex ? _withIndex : _withIndex.map(([e]) => e);
+}
+Array.prototype.sortBy = Array.prototype.orderBy;
