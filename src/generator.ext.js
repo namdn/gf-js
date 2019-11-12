@@ -7,7 +7,7 @@ const GF = Object.getPrototypeOf(function* () { });
 const defaultCallback = v => v;
 
 /**
- * convert GeneratorFunction to Array.
+ * Convert GeneratorFunction to Array.
  * 
  * @return {Array}
  */
@@ -454,13 +454,17 @@ GF.prototype.groupBy = function (callback) {
     return groups;
 }
 
-
+/**
+ * Counting element by key from execute `callback` function.
+ * 
+ * @param {Function} [callback] Function to execute for each element
+ */
 GF.prototype.countBy = function (callback) {
     callback = callback || defaultCallback;
     let groups = {};
     let index = 0;
     for (let it of this) {
-        let key = callback(it, index++, iterable);
+        let key = callback(it, index++, this);
         groups[key] = groups[key] || 0;
         groups[key]++;
     }
