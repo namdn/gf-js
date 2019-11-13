@@ -114,7 +114,7 @@ GF.compare = function (a, b) {
  * 
  * @param {Function} [callback] 
  */
-GF.prototype._minMax = function (callback, isMin = true) {
+GF.prototype._minMax = function (callback, isMin = true, includeIndex = false) {
     let first = this.next();
     if (first.done) return undefined;
 
@@ -122,39 +122,66 @@ GF.prototype._minMax = function (callback, isMin = true) {
     let index = 0;
 
     let target = first.value;
-    let targetValue = callback(target, index++, this);
-
+    let targetResult = callback(target, index, this);
+    let targetIndex = index++;
+    let direct = isMin ? 1 : -1;
     do {
         let { value, done } = this.next();
         if (done) break;
 
-        let newValue = callback(value, index++, this);
-        let c = GF.compare(targetValue, newValue)
-        if ((isMin && c == 1) || (!isMin && c == -1)) {
-            target = value, targetValue = newValue;
+        let newResult = callback(value, index, this);
+        let c = GF.compare(targetResult, newResult)
+
+        if (direct * c > 0) {
+            target = value;
+            targetResult = newResult;
+            targetIndex = index;
         }
-        // if (targetValue > newValue) {
-        //     target = value, targetValue = newValue;
-        // }
+        index++;
     } while (true);
 
-    return target;
-}
-GF.prototype.min = function (callback) {
-    return this._minMax(callback, true);
+    return includeIndex ? [target, targetIndex] : target;
 }
 
-GF.prototype.minBy = GF.prototype.min;
+GF.prototype.minBy = function (callback, includeIndex = false) {
+    return this._minMax(callback, true, includeIndex);
+}
+
+GF.prototype.argMinBy = function (callback) {
+    let [_, index] = this.min(callback, includeIndex = true);
+    return index;
+}
+
+GF.prototype.min = function (includeIndex = false) {
+    return this.minBy(undefined, includeIndex);
+}
+
+GF.prototype.argMin = function () {
+    return this.argMinBy(undefined);
+}
 
 /**
  * Same `Math.max`.
  * 
  * @param {Function} [callback] 
  */
-GF.prototype.max = function (callback) {
-    return this._minMax(callback, false);
+GF.prototype.maxBy = function (callback, includeIndex = false) {
+    return this._minMax(callback, false, includeIndex);
 }
-GF.prototype.maxBy = GF.prototype.max;
+
+GF.prototype.argMaxBy = function (callback) {
+    let [_, index] = this.max(callback, includeIndex = true);
+    return index;
+}
+
+GF.prototype.max = function (includeIndex = false) {
+    return this.maxBy(undefined, includeIndex);
+}
+
+GF.prototype.argMax = function () {
+    return this.argMaxBy(undefined);
+}
+
 
 /**
  * Sum all Number in GeneratorFunction.
@@ -251,20 +278,28 @@ GF.prototype.once = function* (size) {
     }
 }
 
+GF.repeat = function* (value, repeat = undefined) {
+    let count = 0;
+    while (count++ !== repeat) yield value;
+}
+
 /**
  * Same `lodash.chunk but return GeneratorFunction instead of Array
  * 
  * @param {Number} size 
  */
 GF.prototype.ichunk = function* (size) {
-    while (true) {
+    let sizes = (typeof size == 'number') ? GF.repeat(size) : size;
+    for (let size of sizes) {
         let once = [...this.once(size)];
         if (!once.length) break;
         yield once;
     }
 }
 
-GF.prototype.chunk = function (size) { return [...this.ichunk(size)]; }
+GF.prototype.chunk = function (size) {
+    return [...this.ichunk(size)];
+}
 
 /**
  * 
@@ -322,7 +357,9 @@ GF.prototype.itakeWhile = function* (callback) {
     }
 }
 
-GF.prototype.takeWhile = function (callback) { return [...this.itakeWhile(callback)]; }
+GF.prototype.takeWhile = function (callback) {
+    return [...this.itakeWhile(callback)];
+}
 
 /**
  * Same `lodash.dropWhile` but return GeneratorFunction.
@@ -343,7 +380,9 @@ GF.prototype.idropWhile = function* (callback) {
     }
 }
 
-GF.prototype.dropWhile = function (callback) { return [...this.idropWhile(callback)]; }
+GF.prototype.dropWhile = function (callback) {
+    return [...this.idropWhile(callback)];
+}
 
 /**
  * Same `Array.find`
@@ -401,7 +440,9 @@ GF.prototype.ifilter = function* (callback) {
 
 GF.prototype.ifilterBy = GF.prototype.ifilter;
 
-GF.prototype.filter = function (callback) { return [...this.ifilter(callback)]; }
+GF.prototype.filter = function (callback) {
+    return [...this.ifilter(callback)];
+}
 
 GF.prototype.filterBy = GF.prototype.filter;
 
@@ -441,7 +482,7 @@ GF.prototype.every = function (callback) {
  * @param {Number} [end] 
  */
 GF.prototype.islice = function* (begin, end) {
-    if (begin >= end) return;
+    if (begin >= end && end !== void 0) return;
 
     let index = 0;
     for (let v of this) {
@@ -451,7 +492,25 @@ GF.prototype.islice = function* (begin, end) {
     }
 }
 
-GF.prototype.slice = function (begin, end) { return [...this.islice(begin, end)]; }
+GF.prototype.iskip = function (count) {
+    return this.islice(count);
+}
+
+GF.prototype.itake = function (count) {
+    return this.islice(0, count);
+}
+
+GF.prototype.slice = function (begin, end) {
+    return [...this.islice(begin, end)];
+}
+
+GF.prototype.skip = function (count) {
+    return this.slice(count);
+}
+
+GF.prototype.take = function (count) {
+    return this.slice(0, count);
+}
 
 
 /**
@@ -510,7 +569,10 @@ GF.prototype.idistinct = function* (callback) {
     }
 }
 
+GF.prototype.idistinctBy = GF.prototype.idistinct;
+
 GF.prototype.distinct = function (callback) { return [...this.idistinct(callback)]; }
+GF.prototype.distinctBy = GF.prototype.distinct;
 
 module.exports = GF;
 

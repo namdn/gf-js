@@ -34,13 +34,3 @@ console.log(
     arr1.toGenerator().idistinct().toArray()
 );
 
-const arr2 = [1,2,3,4];
-
-console.log('icombinations',
-    arr2.toGenerator().icombinations(2).toArray()
-);
-
-console.log('permutations',
-    arr2.toGenerator().ipermutations(2).toArray()
-);
-

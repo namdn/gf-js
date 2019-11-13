@@ -1,5 +1,5 @@
 const GF = require('./generator.ext');
-const { _decisionCallback, _getCallback} = require('./callback')
+const { _decisionCallback, _getCallback } = require('./callback')
 
 Array.prototype.sum = function () {
     return this.toGenerator().sum();
@@ -17,9 +17,12 @@ Array.prototype.round_avg = function () {
 Array.izip = GF.izip;
 Array.zip = GF.zip;
 
+Array.repeat = GF.repeat;
+
 
 Array.ichain = GF.ichain;
 Array.chain = GF.chain;
+
 
 Array.prototype.imap = function (callback) {
     return this.toGenerator().imap(callback);
@@ -27,7 +30,7 @@ Array.prototype.imap = function (callback) {
 
 Array.prototype.imapBy = Array.prototype.imap;
 
-Array.prototype.mapBy = function(callback, toArray=false){
+Array.prototype.mapBy = function (callback, toArray = false) {
     return this.toGenerator().mapBy(callback, toArray);
 }
 
@@ -71,7 +74,7 @@ Array.prototype.ifilter = function (callback) {
 }
 Array.prototype.ifilterBy = Array.prototype.ifilter;
 
-Array.prototype.filterBy = function (callback){
+Array.prototype.filterBy = function (callback) {
     return this.toGenerator().filterBy(callback)
 }
 
@@ -84,21 +87,48 @@ Array.prototype.countBy = function (callback) {
     return this.toGenerator().countBy(callback);
 }
 
-Array.prototype.minBy = function (callback){
-    return this.toGenerator().minBy(callback);
+Array.prototype.minBy = function (callback, includeIndex = false) {
+    return this.toGenerator().minBy(callback, includeIndex);
 }
 
-Array.prototype.maxBy = function (callback){
-    return this.toGenerator().maxBy(callback);
+Array.prototype.min = function (includeIndex = false) {
+    return this.toGenerator().min(includeIndex);
+}
+
+Array.prototype.argMinBy = function (callback) {
+    return this.toGenerator().argMinBy(callback);
+}
+
+Array.prototype.argMin = function () {
+    return this.toGenerator().argMin();
+}
+
+Array.prototype.maxBy = function (callback, includeIndex = false) {
+    return this.toGenerator().maxBy(callback, includeIndex);
+}
+
+Array.prototype.max = function (includeIndex = false) {
+    return this.toGenerator().max(includeIndex);
+}
+
+Array.prototype.argMaxBy = function (callback) {
+    return this.toGenerator().argMaxBy(callback);
+}
+
+Array.prototype.argMax = function () {
+    return this.toGenerator().argMax();
 }
 
 Array.prototype.idistinct = function (callback) {
     return this.toGenerator().idistinct(callback);
 }
 
+Array.prototype.idistinctBy = Array.prototype.idistinct;
+
 Array.prototype.distinct = function (callback) {
     return this.toGenerator().distinct(callback);
 }
+Array.prototype.distinctBy = Array.prototype.distinct;
 
 Array.prototype.shuffle = function () {
     let ret = [...this];
@@ -118,6 +148,8 @@ Array.prototype.first = function (callback = undefined) {
     return this.find(callback || (v => 1));
 }
 
+Array.prototype.firstBy = Array.prototype.first;
+
 /**
  * get the last item of array
  * @param  {Function} callback [description]
@@ -132,6 +164,7 @@ Array.prototype.last = function (callback = undefined) {
     }
     return undefined;
 }
+Array.prototype.lastBy = Array.prototype.last;
 
 Array.compare = GF.compare;
 
@@ -145,20 +178,54 @@ Array.prototype.compare = function (b) {
  * @param  {Function} callback [description]
  * @return {[type]}            [description] 
  */
-Array.prototype.orderBy = function (callback = undefined, getIndex = false) {
-
+Array.prototype.orderBy = function (callback = undefined, reverse = false) {
     callback = _getCallback(callback) || (v => v);
+    let direct = reverse ? -1 : 1;
     let _withIndex = this.map((e, i) => [e, i]);
     _withIndex.sort(([e1, i1], [e2, i2]) => {
         a = callback(e1, i1, this);
         b = callback(e2, i2, this);
-        return Array.compare(a, b);
+        return Array.compare(a, b) * direct;
     });
-    return getIndex ? _withIndex : _withIndex.map(([e]) => e);
+    return _withIndex.map(([e]) => e);
 }
 Array.prototype.sortBy = Array.prototype.orderBy;
 
 
-GF.prototype.orderBy =  function (callback = undefined, getIndex = false){
-    return this.toArray().orderBy(callback, getIndex);
+GF.prototype.orderBy = function (callback = undefined, reverse = false) {
+    return this.toArray().orderBy(callback, reverse);
+}
+
+GF.prototype.sortBy = GF.prototype.orderBy;
+
+Array.prototype.skip = function(count){
+    return this.slice(count);
+}
+
+Array.prototype.iskip = function(count){
+    return this.slice(count).toGenerator();
+}
+
+Array.prototype.take = function(count){
+    return this.slice(0, count);
+}
+
+Array.prototype.itake = function(count){
+    return this.slice(0, count).toGenerator();
+}
+
+Array.prototype.idropWhile = function(callback){
+    return this.toGenerator().idropWhile(callback);
+}
+
+Array.prototype.dropWhile = function(callback){
+    return this.toGenerator().dropWhile(callback);
+}
+
+Array.prototype.itakeWhile = function(callback){
+    return this.toGenerator().itakeWhile(callback);
+}
+
+Array.prototype.takeWhile = function(callback){
+    return this.toGenerator().takeWhile(callback);
 }
