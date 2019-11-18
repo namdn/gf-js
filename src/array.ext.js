@@ -16,6 +16,7 @@ Array.prototype.round_avg = function () {
 
 Array.izip = GF.izip;
 Array.zip = GF.zip;
+Array.zipObject = GF.zipObject;
 
 Array.repeat = GF.repeat;
 
@@ -82,6 +83,11 @@ Array.prototype.filterBy = function (callback) {
 Array.prototype.groupBy = function (callback) {
     return this.toGenerator().groupBy(callback);
 }
+
+Array.prototype.partition = function (callback) {
+    return Object.values(this.groupBy(callback));
+}
+
 
 Array.prototype.countBy = function (callback) {
     return this.toGenerator().countBy(callback);
@@ -179,7 +185,7 @@ Array.prototype.compare = function (b) {
  * @return {[type]}            [description] 
  */
 Array.prototype.orderBy = function (callback = undefined, reverse = false) {
-    callback = _getCallback(callback) || (v => v);
+    callback = _getCallback(callback, toArray = true) || (v => v);
     let direct = reverse ? -1 : 1;
     let _withIndex = this.map((e, i) => [e, i]);
     _withIndex.sort(([e1, i1], [e2, i2]) => {
@@ -198,34 +204,42 @@ GF.prototype.orderBy = function (callback = undefined, reverse = false) {
 
 GF.prototype.sortBy = GF.prototype.orderBy;
 
-Array.prototype.skip = function(count){
+Array.prototype.skip = function (count) {
     return this.slice(count);
 }
 
-Array.prototype.iskip = function(count){
+Array.prototype.iskip = function (count) {
     return this.slice(count).toGenerator();
 }
 
-Array.prototype.take = function(count){
+Array.prototype.take = function (count) {
     return this.slice(0, count);
 }
 
-Array.prototype.itake = function(count){
+Array.prototype.itake = function (count) {
     return this.slice(0, count).toGenerator();
 }
 
-Array.prototype.idropWhile = function(callback){
+Array.prototype.idropWhile = function (callback) {
     return this.toGenerator().idropWhile(callback);
 }
 
-Array.prototype.dropWhile = function(callback){
+Array.prototype.dropWhile = function (callback) {
     return this.toGenerator().dropWhile(callback);
 }
 
-Array.prototype.itakeWhile = function(callback){
+Array.prototype.itakeWhile = function (callback) {
     return this.toGenerator().itakeWhile(callback);
 }
 
-Array.prototype.takeWhile = function(callback){
+Array.prototype.takeWhile = function (callback) {
     return this.toGenerator().takeWhile(callback);
+}
+
+Array.prototype.iassignProbs = function (probs) {
+    return this.toGenerator().iassignProbs(probs);
+}
+
+Array.prototype.assignProbs = function (probs) {
+    return this.toGenerator().assignProbs(probs);
 }

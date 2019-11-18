@@ -148,7 +148,7 @@ GF.prototype.minBy = function (callback, includeIndex = false) {
 }
 
 GF.prototype.argMinBy = function (callback) {
-    let [_, index] = this.min(callback, includeIndex = true);
+    let [_, index] = this.minBy(callback, includeIndex = true);
     return index;
 }
 
@@ -531,6 +531,11 @@ GF.prototype.groupBy = function (callback) {
     return groups;
 }
 
+
+GF.prototype.partition = function (callback) {
+    return Object.values(this.groupBy(callback));
+}
+
 /**
  * Counting element by key from execute `callback` function.
  * 
@@ -571,11 +576,38 @@ GF.prototype.idistinct = function* (callback) {
 
 GF.prototype.idistinctBy = GF.prototype.idistinct;
 
-GF.prototype.distinct = function (callback) { return [...this.idistinct(callback)]; }
+GF.prototype.distinct = function (callback) {
+    return [...this.idistinct(callback)];
+}
+
 GF.prototype.distinctBy = GF.prototype.distinct;
 
 module.exports = GF;
 
+GF.zipObject = function (keys, values) {
+    let o = {};
+
+    GF
+        .izip(keys, values)
+        .forEach(([p, v]) => o[p] = v)
+
+    return o;
+}
+
+GF.prototype.iassignProbs = function (probs) {
+    let keys = Object.keys(probs);
+    let gvalues = Object.values(probs);
+    return Array
+        .izip(this, ...gvalues)
+        .imap(([o, ...values]) => {
+            Object.assign(o, GF.zipObject(keys, values));
+            return o;
+        })
+}
+
+GF.prototype.assignProbs = function (probs) {
+    return [...this.iassignProbs(probs)];
+}
 
 
 

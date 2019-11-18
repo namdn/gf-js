@@ -4,6 +4,7 @@ x = Array.range(10).map(i=>Math.round(Math.random()*10));
 console.log('x =',x);
 
 console.log('groupBy', x.groupBy());
+console.log('partition', x.partition());
 console.log('countBy', x.countBy());
 
 console.log('groupBy', x.groupBy(i=>i%3));
