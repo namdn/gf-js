@@ -1,5 +1,5 @@
 const GF = require('../index');
-
+//infinite object
 function* gen_user() {
     for (let id = 0; ; id++) yield { id }
 }

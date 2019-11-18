@@ -330,6 +330,7 @@ GF.irange = function* (...args) {
         step = stop > start ? 1 : -1;
     } else {
         [start, stop, step] = args;
+        console.log(start,stop,step);
     }
 
     if (step > 0) {
@@ -456,6 +457,7 @@ GF.prototype.some = function (callback) {
     callback = _decisionCallback(callback) || defaultCallback;
     let index = 0;
     for (let v of this) {
+        console.log('v',v);
         if (callback(v, index++, this)) {
             return true;
         }

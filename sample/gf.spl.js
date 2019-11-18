@@ -23,17 +23,6 @@ function* prime() {
             yield i;
 }
 
-// const m = require('lodash');
-
-// m();
-// m.a;
-
-
-// Array
-//     .izip(prime(), fibonacci(), fibonacci().imap(i=>i*2))
-//     .take(10).forEach(x=>console.log(x))
-
-
 let users = [
     { 'user': 'barney', 'age': 36, 'active': true },
     { 'user': 'fred', 'age': 36, 'active': false },
