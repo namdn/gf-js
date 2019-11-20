@@ -1,3 +1,8 @@
+# Install with:
+```
+npm install gf-js --save
+```
+
 # gf-js
 
 Write some extensions function for [**GeneratorFunction**](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction) and [**Array**](https://developer.mozilla.org/vi/docs/Web/JavaScript/Reference/Global_Objects/Array). We expand and attach most of [`lodash`](https://lodash.com/) functions to `Array` and `GeneratorFunction` by applying technique [`Extension Methods` or `Extension Function`](https://www.loekvandenouweland.com/content/extension-methods-in-javascript.html) in `Javascript`.
@@ -47,13 +52,6 @@ for(let v in chunker){
 	// loop infinite - please press `Ctrl-B` to break
 }
 ```
-
-
-Install with:
-```
-npm install gf-js --save
-```
-
 ## What is `GeneratorFunction(GF)`? 
   `GeneratorFunction` is `Function` can return a [`Generator`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator "The Generator object is returned by a generator function and it conforms to both the iterable protocol and the iterator protocol.") object. . Instead of saving all entrie data as an `Array`, the `Generator` generates the next value as needed base on the previous value. So that the `Generator` does not waste memory, and it can be generator infinite values. You can read more information in [function*](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function*)
   
