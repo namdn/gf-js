@@ -534,6 +534,40 @@ console.log(users.maxBy(['age', 'heigh']));
 Special functions of `argMinBy` and `argMaxBy`. Not apply `callback` for item.
 
 
+### `GF.prototype.orderBy(callback, reverse = false)`
+### `Array.prototype.orderBy(callback, reverse = false)`
+### `GF.prototype.sortBy(callback, reverse = false)`
+### `Array.prototype.sortBy(callback, reverse = false)`
+Order the item by `callback` same as [Array.prototype.sort()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort).  The `callback` is not a comparator function, it is `GetCallback`, and we use `<`, `>`, `==` for compare. We write compare to compare 2 array by dictionary compare.
+```js
+const users = [
+    { user: 'barney', age: 36, active: true, heigh: 10 },
+    { user: 'barney', age: 46, active: true, heigh: 12 },
+    { user: 'fred', age: 40, active: false, heigh: 11 },
+    { user: 'barney', age: 40, active: true, heigh: 12 }
+];
+
+//order by `age`
+users.orderBy('age');
+// [
+//   { user: 'barney', age: 36, active: true, heigh: 10 },
+//   { user: 'fred', age: 40, active: false, heigh: 11 },
+//   { user: 'barney', age: 40, active: true, heigh: 12 },
+//   { user: 'barney', age: 46, active: true, heigh: 12 }
+// ]
+
+//order by `heigh`, if order by `age`
+users.orderBy(['heigh','age']);
+// [
+//   { user: 'barney', age: 36, active: true, heigh: 10 },
+//   { user: 'fred', age: 40, active: false, heigh: 11 },
+//   { user: 'barney', age: 40, active: true, heigh: 12 },
+//   { user: 'barney', age: 46, active: true, heigh: 12 }
+// ]
+```
+
+See [orderby.spl.js](./sample/orderby.spl.js) for more samples.
+
 ### `GF.prototype.someBy(callback)` 
 ### `Array.prototype.someBy(callback)` 
 Apply [`Array.prototype.some(callback)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some) to GF.
