@@ -348,6 +348,7 @@ let x = Array.range(5);		//x = [0,1,2,3,4]
 let y = Array.range(1,11);	//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 let z = Array.range(0, -10, -1); //[0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
 ```
+###  `GF.prototype.groupBy(callback=undefined)`
 ###  `Array.prototype.groupBy(callback=undefined)`
 Group all items with the same key in the same group.
 The `callback` parameter is `GetCallback`. See `mapBy` method.
@@ -359,6 +360,13 @@ let g = x.groupBy(x=>x%2);
 //	'1':[1,3,5,7,9]
 // }
 ```
+See [group-partition-count-distinct.spl](./sample/group-partition-count-distinct.spl) for more samples.
+
+###  `GF.prototype.partition(callback=undefined)`
+###  `Array.prototype.partition(callback=undefined)`
+The same as `groupBy` but not return the keys, only array of values.
+See [group-partition-count-distinct.spl](./sample/group-partition-count-distinct.spl) for more samples.
+
 ### `GF.prototype.distinctBy(callback=undefined)`
 ### `GF.prototype.idistinctBy(callback=undefined)`
 ### `Array.prototype.distinctBy(callback=undefined)` 
@@ -369,20 +377,72 @@ let x = [1,2,3,4,5,6,5,7,6,8];
 let d1 = x.distinct();	//d1 = [1,2,3,4,5,6,7,8]
 let d2 = x.distinct(x=>x%5);	//d2 = [1,2,3,4,5];
 ```
+See [group-partition-count-distinct.spl](./sample/group-partition-count-distinct.spl) for more samples.
 
 ### `GF.prototype.minBy(callback, includeIndex = false)`
 ### `Array.prototype.minBy(callback, includeIndex = false)`
 ### `GF.prototype.maxBy(callback, includeIndex = false)`
 ### `Array.prototype.maxBy(callback, includeIndex = false)`
-Get the min by `callback`. The `callback` parameter is `GetCallback`. Instead of `Math.min` and `Math.max` functions, the return value is the original value, not the value after apply `callback`. If `includeIndex` is `true` return pair of value and index of value
 
-See [min-max.spl.js](./sample/min-max.spl.js) 
+Get the min, max by `callback`. The `callback` parameter is `GetCallback`. Instead of `Math.min` and `Math.max` functions, the return value is the original value, not the value after apply `callback`. If `includeIndex` is `true` return pair of value and index of value
+```js
+x = [1, 2, 3, 4, 5, 4]
+
+console.log(x.min(), x.max())
+
+y = [
+    [1, 3, -4],
+    [0],
+    [-0],
+    [1, 2],
+    [1, 3],
+    [1, 3, -5],
+    [0, 5]
+]
+
+console.log(y.min(includeIndex = true))
+console.log(y.max(includeIndex = false))
+
+console.log(y.minBy(v => v[1]))
+console.log(y.minBy(v => v[1]))
+
+var users = [
+    { 'user': 'barney', 'age': 36, 'active': true, 'heigh': 10 },
+    { 'user': 'barney', 'age': 36, 'active': true, 'heigh': 12 },
+    { 'user': 'fred', 'age': 40, 'active': false, 'heigh': 11 },
+    { 'user': 'barney', 'age': 40, 'active': true, 'heigh': 12 },
+];
+```
+
+See [min-max.spl.js](./sample/min-max.spl.js) for more samples.
+### `GF.prototype.min(includeIndex = false)`
+### `Array.prototype.min(includeIndex = false)`
+### `GF.prototype.max(includeIndex = false)`
+### `Array.prototype.max(includeIndex = false)`
+Special functions of `minBy` and `maxBy`. Not apply `callback` for item.
 
 ### `GF.prototype.argMinBy(callback)`
 ### `Array.prototype.argminBy(callback)`
 ### `GF.prototype.argmaxBy(callback)`
 ### `Array.prototype.argmaxBy(callback)`
 Insead of returning value, the function return the index of value in `GF` or `Array`. See [min-max.spl.js](./sample/min-max.spl.js) 
+```js
+console.log(users.argMinBy('age'), users.minBy('age'));
+console.log(users.argMaxBy('age'), users.maxBy('age'));
+
+console.log(users.minBy('age', includeIndex = true));
+console.log(users.maxBy('age', includeIndex = true));
+
+console.log(users.minBy(['age', 'heigh']));
+console.log(users.maxBy(['age', 'heigh']));
+```
+
+### `GF.prototype.argMin()`
+### `Array.prototype.argMin()`
+### `GF.prototype.argMax()`
+### `Array.prototype.argMax()`
+Special functions of `argMinBy` and `argMaxBy`. Not apply `callback` for item.
+
 
 ### `GF.prototype.someBy(callback)` 
 ### `Array.prototype.someBy(callback)` 
@@ -412,6 +472,25 @@ function *generator(){
 let g = generator();
 let even = g.everyBy(x=>x%2==0);	//true
 let mod3 = g.someBy(x=>x%3==0);	//false
+```
+
+### `GF.prototype.irepeat(number=undefined)`
+### `Array.prototype.irepeat(number=undefined)`
+### `GF.prototype.repeat(number=undefined)`
+### `Array.prototype.repeat(number=undefined)`
+Repeats all items in this `number` of times. If the `number` is `undefined`, repeat infinite.
+
+Eg:
+
+```js
+for(let item of [1,2].repeat(5)){
+    console.log(item);
+}
+
+//infinite loop
+for(let item of [1,2].repeat()){
+    console.log(item);
+}
 ```
 ## License
 
