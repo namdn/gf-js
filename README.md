@@ -1,4 +1,4 @@
-# Install with:
+# Install with
 ```
 npm install gf-js --save
 ```
@@ -271,8 +271,12 @@ let y = ['a','b','c','d'];
 let z = Array.chain(x,y);
 //z = [1,2,3,4,'a','b','c','d']
 ```
+See [chunk-chain.spl.js](./sample/chunk-chain.spl.js) to see more samples.
+
 ### `Array.prototype.chunk(size)` 
 ### `GF.prototype.chunk(size)`
+### `Array.prototype.ichunk(size)` 
+### `GF.prototype.ichunk(size)`
 Creates an array of elements split into groups the length of size. If array can't be split evenly, the final chunk will be the remaining elements. Implememt lodash [`chunk`](https://lodash.com/docs/#chunk). But the `size` parameter is more flexible
 
 The `size` parameter can be a number
@@ -313,17 +317,34 @@ let y = x.chunk(size())
 // ] 
 ```
 
-### `Array.prototype.ichunk(size)` 
-### `GF.prototype.ichunk(size)`
-Implememt lodash [`chunk`](https://lodash.com/docs/#chunk) but return GF instead of Array
+An infinite-loop `Generator`
+```js
+let x = [1,2,3,4,5,6,7,8,9,10, 11]
+let y = x.chunk([2,3].repepat())	//loop 2, 3 infinite
+// y = [
+// 	[1, 2], 	//2
+// 	[3,4,5],	//3
+// 	[6,7],		//2
+//  [8, 9, 10],	//3
+//  [11]		// remain only one item
+// ] 
+```
+See [chunk-chain.spl.js](./sample/chunk-chain.spl.js) to see more samples.
 
 ### `Array.prototype.ifilterBy(callback)` 
 ### `GF.prototype.ifilterBy(callback)`
-Same [`Array.prototype.filter(callback)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) but return GF instead of Array
-
 ### `GF.prototype.filterBy(callback)`
 ### `Array.prototype.filterBy(callback)`
-Implement [`Array.prototype.filter(callback)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter) in GF
+
+Same [`Array.prototype.filter(callback)`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter). A `callback` not only a function, but also a `DecisionCallback`.
+```js
+/**
+ * A string, a function or a  object<key,value> object.
+ * @typedef {String|Function|Object.<string,string>} DecisionCallback 
+ */
+```
+
+`callback` is function
 
 ```js
 function* generator(n) {
@@ -333,6 +354,43 @@ let g = generator(7);
 let h = g.filterBy(x=>x%3==0);
 // h = [0,3,6]
 ```
+
+```js
+const users = [
+    { user: 'barney', age: 36, active: true, heigh: 10 },
+    { user: 'barney', age: 36, active: true, heigh: 12 },
+    { user: 'fred', age: 40, active: false, heigh: 11 },
+    { user: 'barney', age: 40, active: true, heigh: 12 }
+]
+users.filterBy(({active})=>active);
+// [
+//     { user: 'barney', age: 36, active: true, heigh: 10 },
+//     { user: 'barney', age: 36, active: true, heigh: 12 },
+// ]
+```
+
+`callback` is string
+```js
+users.filterBy(`active`);
+// [
+//     { user: 'barney', age: 36, active: true, heigh: 10 },
+//     { user: 'barney', age: 36, active: true, heigh: 12 },
+// ]
+```
+`callback` is object
+```js
+users.filterBy({heigh:12});
+// [
+//     { user: 'barney', age: 36, active: true, heigh: 12 },
+//     { user: 'barney', age: 40, active: true, heigh: 12 }
+// ]
+
+users.filterBy({heigh:12, age:36});
+// [
+//     { user: 'barney', age: 36, active: true, heigh: 12 },
+// ]
+```
+See [filter.spl.js](./sample/filter.spl.js) for more samples.
 
 ### `Array.range(...args)` 
 ### `Array.irange(...args)`
@@ -346,6 +404,7 @@ let x = Array.range(5);		//x = [0,1,2,3,4]
 let y = Array.range(1,11);	//[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 let z = Array.range(0, -10, -1); //[0, -1, -2, -3, -4, -5, -6, -7, -8, -9]
 ```
+
 ###  `GF.prototype.groupBy(callback=undefined)`
 ###  `Array.prototype.groupBy(callback=undefined)`
 Group all items with the same key in the same group.
@@ -357,8 +416,41 @@ let g = x.groupBy(x=>x%2);
 //	'0':[0,2,4,6,8],
 //	'1':[1,3,5,7,9]
 // }
+const users = [
+    { 'user': 'barney', 'age': 36, 'active': true },
+    { 'user': 'fred', 'age': 36, 'active': false },
+    { 'user': 'mary', 'age': 40, 'active': true },
+    { 'user': 'lazzy', 'age': 40, 'active': false },
+];
+
+users.groupBy('age');
+// {
+//   '36': [
+//     { user: 'barney', age: 36, active: true },
+//     { user: 'fred', age: 36, active: false }
+//   ],
+//   '40': [
+//     { user: 'mary', age: 40, active: true },
+//     { user: 'lazzy', age: 40, active: false }
+//   ]
+// }
 ```
-See [group-partition-count-distinct.spl](./sample/group-partition-count-distinct.spl) for more samples.
+See [group-partition-count-distinct.spl.js](./sample/group-partition-count-distinct.spl.js) for more samples.
+
+###  `GF.prototype.countBy(callback=undefined)`
+###  `Array.prototype.countBy(callback=undefined)`
+The same as `groupBy` function but instead of return array of items, just return the number of item in the same group.
+```js
+const users = [
+    { 'user': 'barney', 'age': 36, 'active': true },
+    { 'user': 'fred', 'age': 36, 'active': false },
+    { 'user': 'mary', 'age': 40, 'active': true },
+    { 'user': 'lazzy', 'age': 40, 'active': false },
+];
+users.countBy('age');
+//{ '36': 2, '40': 2 }
+```
+See [group-partition-count-distinct.spl.js](./sample/group-partition-count-distinct.spl.js) for more samples.
 
 ###  `GF.prototype.partition(callback=undefined)`
 ###  `Array.prototype.partition(callback=undefined)`
@@ -489,6 +581,67 @@ for(let item of [1,2].repeat(5)){
 for(let item of [1,2].repeat()){
     console.log(item);
 }
+```
+
+### `GF.prototype.islice(begin, [end])`
+### `Array.prototype.islice(begin, [end])`
+### `GF.prototype.slice(begin, [end])`
+### `Array.prototype.slice(begin, [end])`
+Same as [`Array.prototype.slice(begin, [end])`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice). See [skip-take.spl.js](./sample/skip-take.spl.js)
+
+### `GF.prototype.itake(number)`
+### `Array.prototype.itake(number)`
+### `GF.prototype.take(number)`
+### `Array.prototype.take(number)`
+Equal to `Array.prototype.slice(0, number)`. See [skip-take.spl.js](./sample/skip-take.spl.js)
+
+### `GF.prototype.iskip(number)`
+### `Array.prototype.iskip(number)`
+### `GF.prototype.skip(number)`
+### `Array.prototype.skip(number)`
+Equal to `Array.prototype.slice(number)`. See [skip-take.spl.js](./sample/skip-take.spl.js)
+
+### `GF.prototype.itakeWhile(callback)`
+### `Array.prototype.itakeWhile(callback)`
+### `GF.prototype.takeWhile(callback)`
+### `Array.prototype.takeWhile(callback)`
+Take the item while `callback(item)` is true. The `callback` is `DecissionCallback`, same as `filterBy` method.
+
+### `GF.prototype.idropWhile(callback)`
+### `Array.prototype.idropWhile(callback)`
+### `GF.prototype.dropWhile(callback)`
+### `Array.prototype.dropWhile(callback)`
+Drop the item while `callback(item)` is true. The `callback` is `DecissionCallback`, same as `filterBy` method.
+
+### `GF.prototype.iassignProbs(probs)`
+### `Array.prototype.iassignProbs(probs)`
+### `GF.prototype.assignProbs(probs)`
+### `Array.prototype.assignProbs(probs)`
+Assign more probs for the current object. The `Array` or `Generetor` is array of pair<key,value> objects.
+```js
+const users = [
+    { user: 'barney', active: true },
+    { user: 'barney', active: true },
+    { user: 'fred', active: false },
+    { user: 'barney', active: true }
+];
+ages = [36,37,38,39]
+heighs = [10,12,12,13]
+users.assignProbs({
+	age:ages,
+	heigh:heighs
+})
+//same as 
+// Array
+// 	.izip(users, ages, heighs)
+// 	.forEach(([user,age,heigh])=>Object.assign(user,{age,heigh}))
+
+// [
+//     { user: 'barney', age: 36, active: true, heigh: 10 },
+//     { user: 'barney', age: 37, active: true, heigh: 12 },
+//     { user: 'fred', age: 38, active: false, heigh: 12 },
+//     { user: 'barney', age: 39, active: true, heigh: 13 }
+// ];
 ```
 ## License
 
