@@ -1,6 +1,9 @@
 const GF = require('./generator.ext');
 const { _decisionCallback, _getCallback } = require('./callback')
 
+/**
+ * 
+ */
 Array.prototype.sum = function () {
     return this.toGenerator().sum();
 }
@@ -24,7 +27,9 @@ Array.repeat = GF.repeat;
 Array.ichain = GF.ichain;
 Array.chain = GF.chain;
 
-
+/**
+ * 
+ */
 Array.prototype.imap = function (callback) {
     return this.toGenerator().imap(callback);
 }
@@ -77,6 +82,14 @@ Array.prototype.ifilterBy = Array.prototype.ifilter;
 
 Array.prototype.filterBy = function (callback) {
     return this.toGenerator().filterBy(callback)
+}
+
+Array.prototype.someBy = function (callback) {
+    return this.toGenerator().someBy(callback)
+}
+
+Array.prototype.everyBy = function (callback) {
+    return this.toGenerator().everyBy(callback)
 }
 
 
@@ -242,4 +255,32 @@ Array.prototype.iassignProbs = function (probs) {
 
 Array.prototype.assignProbs = function (probs) {
     return this.toGenerator().assignProbs(probs);
+}
+
+Array.prototype.irepeat = function *(number){
+    if(number !== undefined && number !== null){
+        while(number-- > 0){
+            for(let item of this)
+                yield item;
+        }
+    }else{
+        while(true){
+            for(let item of this)
+                yield item;
+        }
+    }
+}
+
+Array.prototype.repeat = function(number){
+    if(number !== undefined && number !== null && !isNaN(number))
+        return [...this.irepeat(number)];
+    return this.irepeat();
+}
+
+GF.prototype.irepeat = function (number){
+   return [...this].irepeat(number);
+}
+
+GF.prototype.repeat = function(number){
+    return [...this].repeat(number);
 }

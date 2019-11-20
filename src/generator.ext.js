@@ -17,6 +17,7 @@ GF.prototype.toArray = function () {
     return [...this];
 }
 
+
 /**
  * Convert Array to Generator.
  * 
@@ -95,6 +96,9 @@ GF.prototype.maxByComparator = function (comparator) {
     return this.minByComparator((a, b) => -comparator(a, b));
 }
 
+/**
+ * Compare to arrays by dictionary comparator.
+ */
 GF.compare = function (a, b) {
     if (a === b) return 0;
     if (!Array.isArray(a) || !Array.isArray(b)) {
@@ -110,9 +114,13 @@ GF.compare = function (a, b) {
 }
 
 /**
- * Same `Math.min`.
+ * Same `Math.min` and `Math.max`
  * 
- * @param {Function} [callback] 
+ * @param {GetCallback} [callback] the callback for each item
+ * @param {boolean} [isMin = true] find min or max value
+ * @param {boolean} [includeIndex = false] return including index of item  or not
+ * 
+ * @return {Object | [object, number]} return item or array of item and index 
  */
 GF.prototype._minMax = function (callback, isMin = true, includeIndex = false) {
     let first = this.next();
@@ -143,6 +151,12 @@ GF.prototype._minMax = function (callback, isMin = true, includeIndex = false) {
     return includeIndex ? [target, targetIndex] : target;
 }
 
+/**
+ * Find min value by `GetCallback`
+ * 
+ * @param {GetCallback} callback
+ * @param {boolean} [includeIndex = false]
+ */
 GF.prototype.minBy = function (callback, includeIndex = false) {
     return this._minMax(callback, true, includeIndex);
 }
@@ -245,7 +259,7 @@ GF.prototype.mapBy = GF.prototype.map;
 /**
  * Same python `zip`
  * 
- * @param {Array<GeneratorFunction|Array>} iterables 
+ * @param {Array.<Iterable>} iterables 
  */
 GF.izip = function* (...iterables) {
     let iterators = iterables
@@ -258,10 +272,12 @@ GF.izip = function* (...iterables) {
     }
 }
 
+
+
 /**
  * zip to Array 
  * 
- * @param {...Array} iterables 
+ * @param {Array.<Iterable>} iterables 
  */
 GF.zip = (...iterables) => [...GF.izip(...iterables)];
 
@@ -278,18 +294,31 @@ GF.prototype.once = function* (size) {
     }
 }
 
-GF.repeat = function* (value, repeat = undefined) {
+/**
+ * Repeat value n times
+ * @param {any} value
+ * @param {number|undefined} [repeat = undefined] number of time to repeat.
+ * If the value is `undefined` value is repeat unfinite loop
+ */
+GF.irepeatValue = function* (value, repeat = undefined) {
     let count = 0;
     while (count++ !== repeat) yield value;
 }
 
+GF.repeatValue = function(value, repeat = undefined) {
+    if(!isNaN(repeat)) 
+        return [...GF.irepeatValue(value,repeat)]
+
+    return GF.irepeatValue(value,repeat);
+}
+
 /**
- * Same `lodash.chunk but return GeneratorFunction instead of Array
+ * Same `lodash.chunk` but return `GeneratorFunction` instead of `Array`.
  * 
- * @param {Number} size 
+ * @param {Number|Array|GeneratorFunction} size 
  */
 GF.prototype.ichunk = function* (size) {
-    let sizes = (typeof size == 'number') ? GF.repeat(size) : size;
+    let sizes = (typeof size == 'number') ? GF.irepeatValue(size) : size;
     for (let size of sizes) {
         let once = [...this.once(size)];
         if (!once.length) break;
@@ -297,13 +326,14 @@ GF.prototype.ichunk = function* (size) {
     }
 }
 
+
 GF.prototype.chunk = function (size) {
     return [...this.ichunk(size)];
 }
 
 /**
  * 
- * @param {Array<GeneratorFunction|Array>} iterables 
+ * @param {Array<Iterable>} iterables 
  */
 GF.ichain = function* (...iterables) {
     for (let it of iterables) {
@@ -330,7 +360,7 @@ GF.irange = function* (...args) {
         step = stop > start ? 1 : -1;
     } else {
         [start, stop, step] = args;
-        console.log(start,stop,step);
+        console.log(start, stop, step);
     }
 
     if (step > 0) {
@@ -457,13 +487,13 @@ GF.prototype.some = function (callback) {
     callback = _decisionCallback(callback) || defaultCallback;
     let index = 0;
     for (let v of this) {
-        console.log('v',v);
         if (callback(v, index++, this)) {
             return true;
         }
     }
     return false;
 }
+GF.prototype.someBy = GF.prototype.some;
 
 /**
  * Same as `Array.every`.
@@ -471,8 +501,11 @@ GF.prototype.some = function (callback) {
  * @param {Function} [callback] 
  */
 GF.prototype.every = function (callback) {
-    return !this.some(callback);
+    callback = _decisionCallback(callback) || defaultCallback;
+    return !this.some((value, index, thisArg) => !callback(value, index, thisArg));
 }
+
+GF.prototype.everyBy = GF.prototype.every;
 
 
 
@@ -586,7 +619,7 @@ GF.prototype.distinctBy = GF.prototype.distinct;
 
 module.exports = GF;
 
-GF.zipObject = function (keys, values) {
+Object.packObject = function (keys, values) {
     let o = {};
 
     GF
@@ -602,7 +635,7 @@ GF.prototype.iassignProbs = function (probs) {
     return Array
         .izip(this, ...gvalues)
         .imap(([o, ...values]) => {
-            Object.assign(o, GF.zipObject(keys, values));
+            Object.assign(o, Object.packObject(keys, values));
             return o;
         })
 }
@@ -610,6 +643,3 @@ GF.prototype.iassignProbs = function (probs) {
 GF.prototype.assignProbs = function (probs) {
     return [...this.iassignProbs(probs)];
 }
-
-
-

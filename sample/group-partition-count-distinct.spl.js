@@ -13,7 +13,7 @@ console.log('countBy', x.countBy(i=>i%3));
 console.log('distinct', x.distinct());
 
 
-var users = [
+const users = [
     { 'user': 'barney', 'age': 36, 'active': true },
     { 'user': 'fred', 'age': 36, 'active': false },
     { 'user': 'mary', 'age': 40, 'active': true },

@@ -1,7 +1,7 @@
 {
   "name": "gf-js",
   "version": "1.1.1",
-  "description": "Write some userful extension function for Javascript GeneratorFunction.",
+  "description": "Attach most of function from lodash to Javascript GeneratorFunction and Array.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
