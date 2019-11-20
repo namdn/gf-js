@@ -13,7 +13,11 @@
   "keywords": [
     "GeneratorFunction",
     "Generator",
-    "linq"
+    "linq",
+    "lodash",
+    "extension function",
+    "yield",
+    "yields"
   ],
   "author": "dinhnhonam@gmail.com",
   "license": "MIT",
