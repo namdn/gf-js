@@ -9,7 +9,7 @@ Array.prototype.sum = function () {
 }
 
 Array.prototype.avg = function () {
-    return this.toGenerator().sum();
+    return this.toGenerator().avg();
 }
 
 
