@@ -48,9 +48,14 @@ function _getCallback(predicate, toArray = false) {
 
             //to object
             o = {};
-            for (let key of predicate) {
-                o[key] = v[key];
-            }
+            predicate.forEach(key => o[key] = v[key]);
+            return o;
+        }
+    } else if (predicate.constructor == Object) {
+        callback = (v) => {
+            o = {};
+            Object.entries(predicate)
+                .forEach(([oldKey, newKey]) => o[newKey] = v[oldKey])
             return o;
         }
     } else {
